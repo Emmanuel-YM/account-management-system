@@ -4,35 +4,31 @@ const jwt = require("jsonwebtoken");
 
 // Generate and send the secret key for a user
 const generateSecret = async (request, response) => {
-  try {
-    const { username } = request.body;
-    const token = request.cookies.token;
-    if (!token) {
-      response.send(false);
-      return;
-    }
-
-    try {
-      jwt.verify(token, process.env.SECRET_JWT);
-    } catch (error) {
-      response.send(false);
-      return;
-    }
-
-    const secret = speakeasy.generateSecret();
-    const filter = { username };
-    const update = { $setOnInsert: { secret: secret.base32 } };
-    const options = { new: true };
-    const updatedUser = await User.findOneAndUpdate(filter, update, options);
-
-    if (updatedUser) {
-      response.json({ secret: updatedUser.secret });
-    } else {
-      response.status(500).json({ message: "An error occurred" });
-    }
-  } catch (error) {
-    console.error("Error generating secret:", error);
-    response.status(500).json({ error: "Internal Server Error" });
+  const token = request.cookies.token;
+  if (token) {
+    jwt.verify(token, process.env.SECRET_JWT, async (err, decodedToken) => {
+      if (err) {
+        response.send(false);
+      } else {
+        const { username } = request.body;
+        const secret = speakeasy.generateSecret();
+        const existingUser = await User.findOne({ username });
+        //check if user has secret set
+        if (!existingUser.secret) {
+          const updatedUser = await User.findOneAndUpdate(
+            { username },
+            { $set: { secret: secret.base32 } }
+          );
+          if (updatedUser) {
+            response.json({ secret: secret.base32 });
+          } else {
+            response.status(500).json({ message: "An error occurred" });
+          }
+        } else {
+          response.json({ secret: existingUser.secret });
+        }
+      }
+    });
   }
 };
 

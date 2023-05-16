@@ -5,6 +5,7 @@ const userSchema = new Schema({
   profilePhoto: { type: String },
   firstName: { type: String },
   lastName: { type: String },
+  email: { type: String },
   gender: { type: String },
   age: { type: String },
   dateOfBirth: { type: String },

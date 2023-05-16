@@ -4,6 +4,7 @@ import StepOne from "./StepOne";
 import StepTwo from "./StepTwo";
 import StepThree from "./StepThree";
 import axios from "axios";
+import { Navigate } from "react-router-dom";
 
 const SignUp = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -12,6 +13,7 @@ const SignUp = () => {
     profilePhoto: null,
     firstName: "",
     lastName: "",
+    email: "",
     gender: "",
     age: "",
     dateOfBirth: "",
@@ -26,6 +28,7 @@ const SignUp = () => {
     password: "",
     verifyPassword: "",
   });
+  const [redirect, setRedirect] = useState(false);
 
   const steps = ["Step 1", "Step 2", "Step 3"];
 
@@ -39,6 +42,7 @@ const SignUp = () => {
 
   const handleSubmit = () => {
     // Make the POST request using Axios
+    console.log(formData,"formData");
     axios
       .post("/api/v1/user/sign-up", formData, {
         headers: {
@@ -46,10 +50,12 @@ const SignUp = () => {
         },
       })
       .then((response) => {
-        console.log(response)
+        console.log(response);
         // Handle successful response
         if (response.data.status !== 200) {
           alert(response.data?.message);
+        } else {
+          setRedirect(true);
         }
       })
       .catch((error) => {
@@ -57,6 +63,10 @@ const SignUp = () => {
         console.error("Error submitting form data:", error);
       });
   };
+
+  if (redirect) {
+    return <Navigate to="/login" />;
+  }
 
   const renderStepComponent = (step) => {
     switch (step) {

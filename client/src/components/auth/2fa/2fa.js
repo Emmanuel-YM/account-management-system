@@ -35,7 +35,6 @@ const QRCodeContainer = styled("div")({
 });
 
 function TwoFactorAuthPage(props) {
-  console.log(props.userDetails);
   const [secret, setSecret] = useState("");
   const [code, setCode] = useState("");
   const [verificationResult, setVerificationResult] = useState(null);

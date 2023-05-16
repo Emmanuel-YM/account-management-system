@@ -9,6 +9,7 @@ const userCreation = async (request, response) => {
     const {
       firstName,
       lastName,
+      email,
       gender,
       age,
       dateOfBirth,
@@ -27,6 +28,7 @@ const userCreation = async (request, response) => {
 
     // Check if the username already exists in the database
     const existingUser = await User.findOne({ username });
+    console.log(existingUser, email, "existingUser");
 
     if (existingUser) {
       // User with the same username already exists
@@ -37,6 +39,7 @@ const userCreation = async (request, response) => {
       profilePhoto: profilePhotoFile.filename,
       firstName,
       lastName,
+      email,
       gender,
       age,
       dateOfBirth,

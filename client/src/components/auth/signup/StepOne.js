@@ -27,6 +27,7 @@ const StepOne = ({ formData, setForm, nextStep }) => {
     const {
       firstName,
       lastName,
+      email,
       gender,
       age,
       dateOfBirth,
@@ -36,6 +37,7 @@ const StepOne = ({ formData, setForm, nextStep }) => {
     if (
       firstName &&
       lastName &&
+      email &&
       gender &&
       age &&
       dateOfBirth &&
@@ -89,6 +91,18 @@ const StepOne = ({ formData, setForm, nextStep }) => {
         mb={2}
         fullWidth
       />
+      <Box mb={1} />
+      <TextField
+        name="email"
+        label="Email"
+        type="email"
+        value={formData.email}
+        onChange={handleChange}
+        required
+        mb={2}
+        fullWidth
+      />
+
       <Box mb={1} />
       <FormControl fullWidth required mb={2}>
         <InputLabel id="gender-label">Gender</InputLabel>
@@ -153,10 +167,6 @@ const StepOne = ({ formData, setForm, nextStep }) => {
             handleChange({ target: { name: "nationality", value } })
           }
           showDefaultOption={false}
-          classes={{
-            control: "MuiFormControl-root",
-            selectMenu: "MuiSelect-root",
-          }}
         />
       </Box>
       <Button variant="contained" onClick={handleNext} fullWidth>
