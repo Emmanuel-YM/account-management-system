@@ -7,8 +7,9 @@ const isAuthenticated = () => {
     /(?:(?:^|.*;\s*)token\s*=\s*([^;]*).*$)|^.*$/,
     "$1"
   );
+  const twoFA = localStorage.getItem("2FA");
 
-  if (!token) {
+  if (!token || !twoFA) {
     return false;
   }
   try {
@@ -18,7 +19,7 @@ const isAuthenticated = () => {
       beginningOfTime - new Date()
     ).getMinutes();
 
-    //return false if the token is expired
+    //return false if the token is expired AND 2fa is not working
     if (!(remainingHours || remainingMinutes) > 0) {
       return false;
     } else return true;

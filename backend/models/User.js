@@ -15,6 +15,7 @@ const userSchema = new Schema({
   officialDocument: { type: String },
   username: { type: String },
   password: { type: String },
+  secret: { type: String },
 });
 
 const User = mongoose.model("User", userSchema);

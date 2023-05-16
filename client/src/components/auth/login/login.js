@@ -10,6 +10,9 @@ import {
   Grid,
 } from "@mui/material";
 import axios from "axios";
+import { Navigate } from "react-router-dom";
+import { connect } from "react-redux";
+import { setData } from "../../../store/actions/auth";
 
 const RootContainer = styled("div")`
   min-height: 100vh;
@@ -43,10 +46,11 @@ const ErrorMessage = styled(Typography)`
   margin-bottom: ${({ theme }) => theme.spacing(2)};
 `;
 
-const LoginPage = () => {
+const LoginPage = (props) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+  const [redirect, setRedirect] = useState(false);
 
   const handleEmailChange = (event) => {
     setUsername(event.target.value);
@@ -59,14 +63,16 @@ const LoginPage = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     // submission logic
-    setError("")
+    setError("");
     axios
       .post("/api/v1/user/login", { username, password })
       .then((response) => {
         // Handle successful response
         if (response.data?.status) {
-          // alert(response.data?.message);
-          setError(response.data?.message)
+          setError(response.data?.message);
+        } else {
+          props.setUserDataAction({ username });
+          setRedirect(true);
         }
       })
       .catch((error) => {
@@ -75,11 +81,15 @@ const LoginPage = () => {
       });
   };
 
+  if (redirect) {
+    return <Navigate to="/2fa" />;
+  }
+
   return (
     <RootContainer>
       <Container maxWidth="sm">
         <StyledPaper elevation={3}>
-        {error && (
+          {error && (
             <ErrorMessage variant="body2" align="center">
               {error}
             </ErrorMessage>
@@ -132,4 +142,9 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setUserDataAction: (data) => dispatch(setData(data)),
+  };
+};
+export default connect(null, mapDispatchToProps)(LoginPage);
