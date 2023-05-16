@@ -9,6 +9,7 @@ import {
   Link,
   Grid,
 } from "@mui/material";
+import axios from "axios";
 
 const RootContainer = styled("div")`
   min-height: 100vh;
@@ -37,9 +38,15 @@ const ButtonContainer = styled("div")`
   margin-top: ${({ theme }) => theme.spacing(2)};
 `;
 
+const ErrorMessage = styled(Typography)`
+  color: red;
+  margin-bottom: ${({ theme }) => theme.spacing(2)};
+`;
+
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState('');
 
   const handleEmailChange = (event) => {
     setUsername(event.target.value);
@@ -51,18 +58,32 @@ const LoginPage = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // submission logic 
-    console.log("username:", username);
-    console.log("Password:", password);
-    // Reset the form fields
-    setUsername("");
-    setPassword("");
+    // submission logic
+    setError("")
+    axios
+      .post("/api/v1/user/login", { username, password })
+      .then((response) => {
+        // Handle successful response
+        if (response.data?.status) {
+          // alert(response.data?.message);
+          setError(response.data?.message)
+        }
+      })
+      .catch((error) => {
+        // Handle error
+        console.error("Error submitting  data:", error);
+      });
   };
 
   return (
     <RootContainer>
       <Container maxWidth="sm">
         <StyledPaper elevation={3}>
+        {error && (
+            <ErrorMessage variant="body2" align="center">
+              {error}
+            </ErrorMessage>
+          )}
           <Typography variant="h5" align="center" gutterBottom>
             Login
           </Typography>

@@ -1,21 +1,27 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Error from "./components/ErrorPage/Error";
 import SignUp from "./components/auth/signup/signup";
 import LoginPage from "./components/auth/login/login";
-
+import Dashboard from "./components/Dashboard/Dashboard";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 function App() {
   return (
-    <div className="App">
-      <BrowserRouter>
+    <Router>
+      <div className="App">
         <Routes>
-          <Route exact path="/signUp" element={<SignUp />} />
-          <Route exact path="/login" element={<LoginPage />} />
+          <Route path="/signUp" element={<SignUp />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/*"
+            element={
+              <ProtectedRoute path="/dashboard" element={<Dashboard />} />
+            }
+          />
           <Route path="*" element={<Error />} />
         </Routes>
-      </BrowserRouter>
-      ,
-    </div>
+      </div>
+    </Router>
   );
 }
 

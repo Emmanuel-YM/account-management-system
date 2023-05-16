@@ -76,7 +76,7 @@ const userLogin = async (request, response) => {
               existingUserPasswordHash
             );
             // Send the token in an HTTP-only cookie
-            response.cookie("token", token, { httpOnly: true }).send();
+            response.cookie("token", token, { httpOnly: false }).send();
           } else {
             return responseMessage(
               response,

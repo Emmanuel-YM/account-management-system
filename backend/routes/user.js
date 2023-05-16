@@ -12,6 +12,6 @@ module.exports = () => {
     ]),
     userController.userCreation
   );
-  router.post('/log-in', userController.userLogin);
+  router.post('/login', userController.userLogin);
   return router;
 };

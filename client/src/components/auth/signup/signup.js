@@ -55,7 +55,6 @@ const SignUp = () => {
       .catch((error) => {
         // Handle error
         console.error("Error submitting form data:", error);
-        // display an error message or perform any other actions
       });
   };
 
