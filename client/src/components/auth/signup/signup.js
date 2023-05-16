@@ -3,6 +3,7 @@ import { Stepper, Step, StepLabel, Button } from "@mui/material";
 import StepOne from "./StepOne";
 import StepTwo from "./StepTwo";
 import StepThree from "./StepThree";
+import axios from "axios";
 
 const SignUp = () => {
   const [activeStep, setActiveStep] = useState(0);
@@ -30,7 +31,6 @@ const SignUp = () => {
 
   const handleNext = () => {
     setActiveStep(activeStep + 1);
-    console.log(formData, "formData1");
   };
 
   const handleBack = () => {
@@ -38,20 +38,25 @@ const SignUp = () => {
   };
 
   const handleSubmit = () => {
-    console.log(formData, "formData2");
     // Make the POST request using Axios
-    // axios
-    //   .post('/api/signup', formData)
-    //   .then((response) => {
-    //     // Handle successful response
-    //     console.log('Form data submitted successfully:', response.data);
-    //     //  navigate to a success page or perform any other actions
-    //   })
-    //   .catch((error) => {
-    //     // Handle error
-    //     console.error('Error submitting form data:', error);
-    //     // display an error message or perform any other actions
-    //   });
+    axios
+      .post("/api/v1/user/sign-up", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        console.log(response)
+        // Handle successful response
+        if (response.data.status !== 200) {
+          alert(response.data?.message);
+        }
+      })
+      .catch((error) => {
+        // Handle error
+        console.error("Error submitting form data:", error);
+        // display an error message or perform any other actions
+      });
   };
 
   const renderStepComponent = (step) => {
