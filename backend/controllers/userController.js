@@ -3,8 +3,9 @@ const { responseMessage } = require("../utils/responses");
 const bcrypt = require("bcryptjs");
 const hashPassword = require("../utils/hashPassword");
 const generateToken = require("../utils/generateToken");
-const nodemailer = require("nodemailer");
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
+const { sendMail } = require("../utils/sendEmail");
 
 const userCreation = async (request, response) => {
   try {
@@ -117,36 +118,11 @@ const generatePasswordToken = async (request, response) => {
     await User.findOneAndUpdate({ email }, { $set: { resetToken: token } });
 
     const resetLink = ` http://localhost:3000/changePin?token=${token}`;
-
-    // Set up your email configuration for Gmail SMTP
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASS,
-      },
-    });
-
-    // Define the email content
-    const mailOptions = {
-      from: "ymannor44@gmail.com",
-      to: email,
-      subject: "Reset Password",
-      text: `Click the following link to reset your password: ${resetLink}`,
-    };
-
-    // Send the email
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log(error);
-        response
-          .status(500)
-          .json({ message: "Failed to send reset link email" });
-      } else {
-        console.log("Email sent: " + info.response);
-        response.json({ message: `Reset link sent to ${email}` });
-      }
-    });
+    sendMail(
+      "Reset Password",
+      `Click the following link to reset your password: ${resetLink}`,
+      email
+    );
   } catch (err) {
     // Handle error
     response.status(500).json({ message: "An error occurred" });
@@ -162,13 +138,25 @@ const resetPassword = async (request, response) => {
       response.send(false);
       return;
     }
+    try {
+      jwt.verify(token, process.env.SECRET_JWT);
+    } catch (error) {
+      response.send(false);
+      return;
+    }
     //update reset token to db
     const hashedPassword = hashPassword(newPassword);
     await User.findOneAndUpdate(
       { resetToken: token },
       { $set: { password: hashedPassword } }
     );
-    response.status(200).json({ message: `Password changed successfully` });
+    const resetLink = ` http://localhost:3000/2fa?username=${existingUser.username}`;
+    sendMail(
+      "Login",
+      `Click the following link to log into your account: ${resetLink}`,
+      existingUser.email
+    );
+    response.cookie("token", token, { httpOnly: false }).send();
   } catch (err) {
     // Handle error
     response.status(500).json({ message: "An error occurred" });

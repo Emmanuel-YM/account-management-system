@@ -42,7 +42,6 @@ const SignUp = () => {
 
   const handleSubmit = () => {
     // Make the POST request using Axios
-    console.log(formData,"formData");
     axios
       .post("/api/v1/user/sign-up", formData, {
         headers: {
@@ -50,7 +49,6 @@ const SignUp = () => {
         },
       })
       .then((response) => {
-        console.log(response);
         // Handle successful response
         if (response.data.status !== 200) {
           alert(response.data?.message);

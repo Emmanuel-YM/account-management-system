@@ -41,10 +41,16 @@ function TwoFactorAuthPage(props) {
   const [redirect, setRedirect] = useState(false);
 
   useEffect(() => {
+    //check if link login
+    const url = window.location.href;
+    const urlParts = url.split("=");
+    const tokenFromUrl = urlParts[urlParts.length - 1];
     // Retrieve the secret key from the backend
     axios
       .post("/api/v1/auth/2fa/generate", {
-        username: props?.userDetails?.details?.username,
+        username: props?.userDetails.details
+          ? props?.userDetails?.details?.username
+          : tokenFromUrl,
       })
       .then((response) => {
         setSecret(response.data.secret);

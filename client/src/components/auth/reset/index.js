@@ -11,8 +11,9 @@ const ResetPasswordPage = () => {
 
     try {
       // Make the Axios POST request to the backend
-      const response = await axios.post("/api/v1/user/generate-token", { email });
-      console.log(response.data); // Handle the response as needed
+      await axios.post("/api/v1/user/generate-token", {
+        email,
+      });
 
       // Display success message
       setResetLinkSent(true);

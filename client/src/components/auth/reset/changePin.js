@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Typography, TextField, Button } from "@mui/material";
+import { Container, Typography, TextField, Button, Box } from "@mui/material";
 import axios from "axios";
 import zxcvbn from "zxcvbn";
 import { Navigate } from "react-router-dom";
@@ -46,16 +46,15 @@ const ChangePinPage = () => {
         newPassword,
       });
 
-      if (response.data.message === "Password changed successfully") {
-        setTimeout(() => {
-          setRedirect(true);
-        }, 700);
-      }
+      if (response?.status === 200) {
+        setErrorMessage(
+          "Password has been successfully reset, you can check your email for a login link"
+        );
+      } else setErrorMessage(response?.data?.message);
 
       // Reset the form and display a success message
       setNewPassword("");
       setVerifyPassword("");
-      setErrorMessage("Password has been successfully reset.");
     } catch (error) {
       console.error(error);
       setErrorMessage("An error occurred while resetting the password.");
@@ -83,7 +82,7 @@ const ChangePinPage = () => {
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
-
+          <Box mb={1} />
           <TextField
             label="Verify Password"
             type="password"
@@ -93,7 +92,7 @@ const ChangePinPage = () => {
             value={verifyPassword}
             onChange={(e) => setVerifyPassword(e.target.value)}
           />
-
+          <Box mb={1} />
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Reset Password
           </Button>
