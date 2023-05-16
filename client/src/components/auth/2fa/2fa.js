@@ -70,7 +70,7 @@ function TwoFactorAuthPage(props) {
         if (response.data.success) {
           setTimeout(() => {
             setRedirect(true);
-          }, 700);
+          }, 900);
         }
       })
       .catch((error) => {

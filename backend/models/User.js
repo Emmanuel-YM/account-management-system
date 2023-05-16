@@ -17,6 +17,7 @@ const userSchema = new Schema({
   username: { type: String },
   password: { type: String },
   secret: { type: String },
+  resetToken: { type: String },
 });
 
 const User = mongoose.model("User", userSchema);

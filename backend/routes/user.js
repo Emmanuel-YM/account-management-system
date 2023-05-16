@@ -12,6 +12,8 @@ module.exports = () => {
     ]),
     userController.userCreation
   );
-  router.post('/login', userController.userLogin);
+  router.post("/login", userController.userLogin);
+  router.post("/generate-token", userController.generatePasswordToken);
+  router.post("/reset-password", userController.resetPassword);
   return router;
 };

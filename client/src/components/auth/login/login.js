@@ -13,6 +13,7 @@ import axios from "axios";
 import { Navigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { setData } from "../../../store/actions/auth";
+import { Link as RouterLink } from "react-router-dom";
 
 const RootContainer = styled("div")`
   min-height: 100vh;
@@ -130,8 +131,12 @@ const LoginPage = (props) => {
             </ButtonContainer>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
-                  Forgot password?
+                <Link
+                  component={RouterLink}
+                  to="/reset-password"
+                  variant="body2"
+                >
+                  Reset Password
                 </Link>
               </Grid>
             </Grid>

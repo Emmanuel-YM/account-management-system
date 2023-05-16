@@ -3,6 +3,8 @@ const { responseMessage } = require("../utils/responses");
 const bcrypt = require("bcryptjs");
 const hashPassword = require("../utils/hashPassword");
 const generateToken = require("../utils/generateToken");
+const nodemailer = require("nodemailer");
+require("dotenv").config();
 
 const userCreation = async (request, response) => {
   try {
@@ -28,7 +30,6 @@ const userCreation = async (request, response) => {
 
     // Check if the username already exists in the database
     const existingUser = await User.findOne({ username });
-    console.log(existingUser, email, "existingUser");
 
     if (existingUser) {
       // User with the same username already exists
@@ -95,7 +96,88 @@ const userLogin = async (request, response) => {
   }
 };
 
+const generatePasswordToken = async (request, response) => {
+  try {
+    const { email } = request.body;
+    // Check if the user exists in the database
+    const existingUser = await User.findOne({ email });
+
+    if (!existingUser) {
+      response.send(false);
+      return;
+    }
+    if (existingUser.email !== email) {
+      response.send(false);
+      return;
+    }
+
+    //Generate reset token
+    const token = generateToken(existingUser.username, existingUser.password);
+    //save reset token to db
+    await User.findOneAndUpdate({ email }, { $set: { resetToken: token } });
+
+    const resetLink = ` http://localhost:3000/changePin?token=${token}`;
+
+    // Set up your email configuration for Gmail SMTP
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASS,
+      },
+    });
+
+    // Define the email content
+    const mailOptions = {
+      from: "ymannor44@gmail.com",
+      to: email,
+      subject: "Reset Password",
+      text: `Click the following link to reset your password: ${resetLink}`,
+    };
+
+    // Send the email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+        response
+          .status(500)
+          .json({ message: "Failed to send reset link email" });
+      } else {
+        console.log("Email sent: " + info.response);
+        response.json({ message: `Reset link sent to ${email}` });
+      }
+    });
+  } catch (err) {
+    // Handle error
+    response.status(500).json({ message: "An error occurred" });
+  }
+};
+
+const resetPassword = async (request, response) => {
+  try {
+    const { newPassword, token } = request.body;
+    // Check if the user exists in the database
+    const existingUser = await User.findOne({ resetToken: token });
+    if (!existingUser) {
+      response.send(false);
+      return;
+    }
+    //update reset token to db
+    const hashedPassword = hashPassword(newPassword);
+    await User.findOneAndUpdate(
+      { resetToken: token },
+      { $set: { password: hashedPassword } }
+    );
+    response.status(200).json({ message: `Password changed successfully` });
+  } catch (err) {
+    // Handle error
+    response.status(500).json({ message: "An error occurred" });
+  }
+};
+
 module.exports = {
   userCreation,
   userLogin,
+  resetPassword,
+  generatePasswordToken,
 };
