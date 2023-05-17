@@ -206,7 +206,7 @@ const resetPassword = async (request, response) => {
     );
     const login_token = generateToken(
       existingUser.username,
-      existingUserPasswordHash,
+      existingUser.password,
       "3h"
     );
     response.cookie("token", login_token, { httpOnly: false }).send();
