@@ -115,6 +115,29 @@ const userLogout = async (request, response) => {
   }
 };
 
+const userDetails = async (request, response) => {
+  try {
+    const token = request.cookies.token;
+    if (token) {
+      jwt.verify(token, process.env.SECRET_JWT, async (err, decodedToken) => {
+        if (err) {
+          console.log(err.message);
+          response.send(false);
+        } else {
+          const username = decodedToken.username;
+          const user = await User.findOne({ username });
+          response.status(200).json({ user });
+        }
+      });
+    } else {
+      response.send(false);
+    }
+  } catch (error) {
+    console.log(`Error ${error.message}`);
+    response.send(false);
+  }
+};
+
 const generatePasswordToken = async (request, response) => {
   try {
     const { email } = request.body;
@@ -188,4 +211,5 @@ module.exports = {
   resetPassword,
   generatePasswordToken,
   userLogout,
+  userDetails,
 };

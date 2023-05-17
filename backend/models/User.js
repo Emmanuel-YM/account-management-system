@@ -18,6 +18,7 @@ const userSchema = new Schema({
   password: { type: String },
   secret: { type: String },
   resetToken: { type: String },
+  verification: { type: String },
 });
 
 const User = mongoose.model("User", userSchema);
