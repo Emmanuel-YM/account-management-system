@@ -198,13 +198,18 @@ const resetPassword = async (request, response) => {
       { resetToken: token },
       { $set: { password: hashedPassword } }
     );
-    const resetLink = ` http://localhost:3000/2fa?username=${existingUser.username}`;
+    const loginLink = ` http://localhost:3000/2fa?username=${existingUser.username}`;
     sendMail(
       "Login",
-      `Click the following link to log into your account: ${resetLink}`,
+      `Click the following link to log into your account: ${loginLink}`,
       existingUser.email
     );
-    response.cookie("token", token, { httpOnly: false }).send();
+    const login_token = generateToken(
+      existingUser.username,
+      existingUserPasswordHash,
+      "3h"
+    );
+    response.cookie("token", login_token, { httpOnly: false }).send();
   } catch (err) {
     // Handle error
     response.status(500).json({ message: "An error occurred" });

@@ -19,7 +19,7 @@ function App() {
           <Route path="/2fa" element={<TwoFactorAuthPage />} />
           <Route path="/resetPassword" element={<ResetPasswordPage />} />
           <Route path="/changePin" element={<ChangePinPage />} />
-
+          <Route exact path="/" element={<LoginPage />} />
           <Route
             path="/*"
             element={
