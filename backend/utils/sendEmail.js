@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const sendMail = (subject, text, email) => {
+const sendMail = (subject, text, email, ) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -23,7 +23,7 @@ const sendMail = (subject, text, email) => {
       response.status(500).json({ message: "Failed to send reset link email" });
     } else {
       console.log("Email sent: " + info.response);
-      response.json({ message: `link sent to ${email}` });
+      return true
     }
   });
 };

@@ -97,6 +97,24 @@ const userLogin = async (request, response) => {
   }
 };
 
+const userLogout = async (request, response) => {
+  const token = request.cookies.token;
+  if (token) {
+    jwt.verify(token, process.env.SECRET_JWT, async (err, decodedToken) => {
+      if (err) {
+        console.log(err.message);
+        response.send(false);
+      } else {
+        response
+          .cookie("token", "", { httpOnly: true, expires: new Date(0) })
+          .send();
+      }
+    });
+  } else {
+    response.send(false);
+  }
+};
+
 const generatePasswordToken = async (request, response) => {
   try {
     const { email } = request.body;
@@ -123,6 +141,7 @@ const generatePasswordToken = async (request, response) => {
       `Click the following link to reset your password: ${resetLink}`,
       email
     );
+    response.json({ message: `link sent to ${email}` });
   } catch (err) {
     // Handle error
     response.status(500).json({ message: "An error occurred" });
@@ -168,4 +187,5 @@ module.exports = {
   userLogin,
   resetPassword,
   generatePasswordToken,
+  userLogout,
 };

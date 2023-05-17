@@ -129,7 +129,12 @@ const LoginPage = (props) => {
                 Login
               </Button>
             </ButtonContainer>
-            <Grid container justifyContent="flex-end">
+            <Grid container justifyContent="space-between">
+              <Grid item>
+                <Link component={RouterLink} to="/signUp" variant="body2">
+                  Sign Up
+                </Link>
+              </Grid>
               <Grid item>
                 <Link
                   component={RouterLink}
