@@ -8,6 +8,7 @@ import {
   Card,
   CardContent,
   Grid,
+  Avatar,
 } from "@mui/material";
 import {
   HomeOutlined,
@@ -74,9 +75,16 @@ const VerificationMessage = styled(Typography)`
   }};
 `;
 
+const AvatarImage = styled(Avatar)`
+  width: 40px;
+  height: 40px;
+  margin-left: 10px;
+`;
+
 const Dashboard = (props) => {
   const [redirect, setRedirect] = React.useState(false);
   const [user] = React.useState(props.userDetails.user);
+  const [profilePhoto, setProfilePhoto] = React.useState(null);
   const handleLogout = async () => {
     // Perform logout actions here
     await axios.post("api/v1/user/logout");
@@ -85,6 +93,27 @@ const Dashboard = (props) => {
       setRedirect(true);
     }, 2000);
   };
+
+  React.useEffect(() => {
+    // Fetch profile photo from the server
+    axios
+      .post(
+        "api/v1/user/photo",
+        { profilePhoto: user.profilePhoto },
+        { responseType: "arraybuffer" }
+      )
+      .then((response) => {
+        const blob = new Blob([response.data], {
+          type: response.headers["content-type"],
+        });
+        const imageUrl = URL.createObjectURL(blob);
+        setProfilePhoto(imageUrl);
+      })
+      .catch((error) => {
+        console.error("Error fetching profile photo:", error);
+      });
+    // eslint-disable-next-line
+  }, []);
 
   if (redirect) {
     return <Navigate to="/login" />;
@@ -110,6 +139,7 @@ const Dashboard = (props) => {
             Logout
             <ExitToAppOutlined fontSize="small" />
           </LogoutButton>
+          <AvatarImage src={profilePhoto} />
         </Toolbar>
       </Navbar>
       <Content>

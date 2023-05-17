@@ -6,6 +6,7 @@ const generateToken = require("../utils/generateToken");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const { sendMail } = require("../utils/sendEmail");
+const path = require("path");
 
 const userCreation = async (request, response) => {
   try {
@@ -23,7 +24,6 @@ const userCreation = async (request, response) => {
       username,
       password,
     } = request.body;
-
     // Access the uploaded files
     const officialDocumentFile = request.files["officialDocument"][0];
     const profilePhotoFile = request.files["profilePhoto"][0];
@@ -79,7 +79,8 @@ const userLogin = async (request, response) => {
           if (result) {
             const token = generateToken(
               existingUser.username,
-              existingUserPasswordHash
+              existingUserPasswordHash,
+              "3h"
             );
             // Send the token in an HTTP-only cookie
             response.cookie("token", token, { httpOnly: false }).send();
@@ -155,7 +156,11 @@ const generatePasswordToken = async (request, response) => {
     }
 
     //Generate reset token
-    const token = generateToken(existingUser.username, existingUser.password);
+    const token = generateToken(
+      existingUser.username,
+      existingUser.password,
+      "5m"
+    );
     //save reset token to db
     await User.findOneAndUpdate({ email }, { $set: { resetToken: token } });
 
@@ -206,6 +211,25 @@ const resetPassword = async (request, response) => {
   }
 };
 
+const getProfilePhoto = async (request, response) => {
+  try {
+    const { profilePhoto } = request.body;
+    const token = request.cookies.token;
+    try {
+      jwt.verify(token, process.env.SECRET_JWT);
+    } catch (error) {
+      response.send(false);
+      return;
+    }
+    const filePath = path.join(__dirname, "../uploads", profilePhoto);
+    response.sendFile(filePath);
+  } catch (err) {
+    console.log(err, "error");
+    // Handle error
+    response.status(500).json({ message: "An error occurred" });
+  }
+};
+
 module.exports = {
   userCreation,
   userLogin,
@@ -213,4 +237,5 @@ module.exports = {
   generatePasswordToken,
   userLogout,
   userDetails,
+  getProfilePhoto,
 };

@@ -138,7 +138,7 @@ const LoginPage = (props) => {
               <Grid item>
                 <Link
                   component={RouterLink}
-                  to="/reset-password"
+                  to="/resetPassword"
                   variant="body2"
                 >
                   Reset Password

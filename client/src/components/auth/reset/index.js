@@ -11,12 +11,14 @@ const ResetPasswordPage = () => {
 
     try {
       // Make the Axios POST request to the backend
-      await axios.post("/api/v1/user/generate-token", {
+      const res = await axios.post("/api/v1/user/generate-token", {
         email,
       });
+      if (res?.data) {
+        setResetLinkSent(true);
+      } else alert("Enter Valid Email");
 
       // Display success message
-      setResetLinkSent(true);
     } catch (error) {
       console.error(error);
       // Handle error cases

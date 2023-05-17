@@ -17,5 +17,6 @@ module.exports = () => {
   router.post("/reset-password", userController.resetPassword);
   router.post("/logout", userController.userLogout);
   router.get("/userDetails", userController.userDetails);
+  router.post("/photo", userController.getProfilePhoto);
   return router;
 };

@@ -11,7 +11,6 @@ const generateSecret = async (request, response) => {
         response.send(false);
       } else {
         const { username } = request.body;
-        console.log(username,"username");
         const secret = speakeasy.generateSecret();
         const existingUser = await User.findOne({ username });
         //check if user has secret set

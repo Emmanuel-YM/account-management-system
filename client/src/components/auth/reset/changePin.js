@@ -22,6 +22,10 @@ const ChangePinPage = () => {
     setToken(tokenFromUrl);
   };
 
+  const redirectToLogin = () => {
+    setRedirect(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -48,7 +52,7 @@ const ChangePinPage = () => {
 
       if (response?.status === 200) {
         setErrorMessage(
-          "Password has been successfully reset, you can check your email for a login link"
+          "Password has been successfully reset, you can check your email for a login link, or Login via Button"
         );
       } else setErrorMessage(response?.data?.message);
 
@@ -95,6 +99,15 @@ const ChangePinPage = () => {
           <Box mb={1} />
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Reset Password
+          </Button>
+          <Box mb={1} />
+          <Button
+            onClick={redirectToLogin}
+            variant="contained"
+            color="primary"
+            fullWidth
+          >
+            Go To Login
           </Button>
 
           {errorMessage && (

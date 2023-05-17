@@ -7,8 +7,10 @@ const { createServer } = require("http");
 const httpServer = createServer(app);
 const routes = require("./routes");
 const { responseMessage } = require("./utils/responses");
+const path = require("path");
 
 app.use(cors());
+app.use(express.static(path.resolve("../backend/uploads/")));
 app.use("/", routes);
 
 mongoose
@@ -18,7 +20,7 @@ mongoose
   .then(() => console.log("MongoDB Connected..."))
   .catch((err) => {
     return app.use((request, response) =>
-    responseMessage(
+      responseMessage(
         response,
         500,
         `Something went wrong! Please try again... ${err}`

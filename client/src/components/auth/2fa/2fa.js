@@ -44,6 +44,7 @@ function TwoFactorAuthPage(props) {
 
   useEffect(() => {
     //check if link login
+    props.setUserDetailsAction();
     const url = window.location.href;
     const urlParts = url.split("=");
     const tokenFromUrl = urlParts[urlParts.length - 1];
