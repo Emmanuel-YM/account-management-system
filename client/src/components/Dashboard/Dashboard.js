@@ -13,9 +13,12 @@ import {
   HomeOutlined,
   ExitToAppOutlined,
   VerifiedUserOutlined,
+  Close,
 } from "@mui/icons-material";
+import PendingIcon from "@mui/icons-material/Pending";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
+import { connect } from "react-redux";
 
 const DashboardContainer = styled("div")`
   display: flex;
@@ -54,17 +57,33 @@ const WelcomeCard = styled(CardContent)`
 `;
 
 const VerificationCard = styled(CardContent)`
-  background-color: #e0f7fa;
+  background-color: ${({ status }) => {
+    if (status === "VERIFIED") return "#c8e6c9";
+    if (status === "PENDING") return "#e0e0e0";
+    if (status === "UNVERIFIED") return "#ffcdd2";
+    return "#f5f5f5";
+  }};
 `;
 
-const Dashboard = () => {
+const VerificationMessage = styled(Typography)`
+  color: ${({ status }) => {
+    if (status === "VERIFIED") return "#4caf50";
+    if (status === "PENDING") return "#757575";
+    if (status === "UNVERIFIED") return "#f44336";
+    return "inherit";
+  }};
+`;
+
+const Dashboard = (props) => {
   const [redirect, setRedirect] = React.useState(false);
+  const [user] = React.useState(props.userDetails.user);
   const handleLogout = async () => {
     // Perform logout actions here
     await axios.post("api/v1/user/logout");
+    localStorage.removeItem("2FA");
     setTimeout(() => {
       setRedirect(true);
-    }, 5000);
+    }, 2000);
   };
 
   if (redirect) {
@@ -78,7 +97,15 @@ const Dashboard = () => {
             <HomeOutlined fontSize="small" />
             Home
           </HomeLink>
-          <VerifiedIcon />
+          {user.verification === "VERIFIED" && (
+            <VerifiedIcon style={{ color: "#4caf50" }} />
+          )}
+          {user.verification === "UNVERIFIED" && (
+            <Close style={{ color: "#f44336" }} />
+          )}
+          {user.verification === "PENDING" && (
+            <PendingIcon style={{ color: "#757575" }} />
+          )}
           <LogoutButton color="inherit" onClick={handleLogout}>
             Logout
             <ExitToAppOutlined fontSize="small" />
@@ -91,7 +118,7 @@ const Dashboard = () => {
             <CardContainer>
               <WelcomeCard>
                 <Typography variant="h6" component="div">
-                  Welcome User
+                  Welcome {`${user?.firstName} ${user?.lastName}`}
                 </Typography>
                 <Typography variant="body2">
                   This is your personal dashboard. Enjoy your stay!
@@ -101,13 +128,25 @@ const Dashboard = () => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <CardContainer>
-              <VerificationCard>
+              <VerificationCard status={user.verification}>
                 <Typography variant="h6" component="div">
                   Verification Status
                 </Typography>
-                <Typography variant="body2">
-                  Your account is verified. Congratulations!
-                </Typography>
+                {user.verification === "VERIFIED" && (
+                  <VerificationMessage status={user.verification}>
+                    Your account is verified. Congratulations!
+                  </VerificationMessage>
+                )}
+                {user.verification === "PENDING" && (
+                  <VerificationMessage status={user.verification}>
+                    Your account is pending verification.
+                  </VerificationMessage>
+                )}
+                {user.verification === "UNVERIFIED" && (
+                  <VerificationMessage status={user.verification}>
+                    Please contact the admin for verification.
+                  </VerificationMessage>
+                )}
               </VerificationCard>
             </CardContainer>
           </Grid>
@@ -117,4 +156,10 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+const mapStateToProps = (state) => {
+  return {
+    userDetails: state.userDetails,
+  };
+};
+
+export default connect(mapStateToProps, null)(Dashboard);

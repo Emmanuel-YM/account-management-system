@@ -5,6 +5,7 @@ import { TextField, Button, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import { Navigate } from "react-router-dom";
 import { connect } from "react-redux";
+import { userDetailsAction } from "../../../store/actions/user";
 
 const CenteredContainer = styled("div")({
   display: "flex",
@@ -39,17 +40,19 @@ function TwoFactorAuthPage(props) {
   const [code, setCode] = useState("");
   const [verificationResult, setVerificationResult] = useState(null);
   const [redirect, setRedirect] = useState(false);
+  const [token, setToken] = useState(false);
 
   useEffect(() => {
     //check if link login
     const url = window.location.href;
     const urlParts = url.split("=");
     const tokenFromUrl = urlParts[urlParts.length - 1];
+    setToken(tokenFromUrl);
     // Retrieve the secret key from the backend
     axios
       .post("/api/v1/auth/2fa/generate", {
-        username: props?.userDetails.details
-          ? props?.userDetails?.details?.username
+        username: props?.userName.details
+          ? props?.userName?.details?.username
           : tokenFromUrl,
       })
       .then((response) => {
@@ -66,14 +69,17 @@ function TwoFactorAuthPage(props) {
     // Send the entered code for verification to the backend
     axios
       .post("/api/v1/auth/2fa/verify", {
-        username: props?.userDetails?.details?.username,
+        username: props?.userName.details
+          ? props?.userName?.details?.username
+          : token,
         code: code,
         secret,
       })
-      .then((response) => {
+      .then(async (response) => {
         setVerificationResult(response.data.success);
         localStorage.setItem("2FA", response.data.success);
         if (response.data.success) {
+          await props.setUserDetailsAction();
           setTimeout(() => {
             setRedirect(true);
           }, 900);
@@ -128,7 +134,12 @@ function TwoFactorAuthPage(props) {
 
 const mapStateToProps = (state) => {
   return {
-    userDetails: state.userDetails,
+    userName: state.userName,
   };
 };
-export default connect(mapStateToProps, null)(TwoFactorAuthPage);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setUserDetailsAction: () => dispatch(userDetailsAction()),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(TwoFactorAuthPage);

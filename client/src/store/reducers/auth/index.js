@@ -1,4 +1,4 @@
-export const userDetails = (state = {}, action) => {
+export const userName = (state = {}, action) => {
   const clone = { ...state };
   switch (action.type) {
     case "SET_USER_DATA":

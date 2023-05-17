@@ -1,6 +1,8 @@
 import { combineReducers } from "redux";
-import { userDetails } from "./auth";
+import { userName } from "./auth";
+import { userDetails } from "./user";
 
 export default combineReducers({
+  userName,
   userDetails,
 });

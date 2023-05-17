@@ -52,6 +52,7 @@ const userCreation = async (request, response) => {
       officialDocument: officialDocumentFile.filename,
       username,
       password: hashedPassword,
+      verification: "PENDING",
     });
     // adding the user to the db
     await user.save();
