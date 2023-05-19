@@ -31,7 +31,7 @@ Navigate to client folder.
 Install the app dependencies by running the following command in the command line inside the folder root where you have unzipped the theme package archive.
 
 
-    npm install
+    npm install --legacy-peer-deps
                                                         
 After npm finishes installing the modules from package.json you can go ahead and start the application. To do so, run the command below.
 

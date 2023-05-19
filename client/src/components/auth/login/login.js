@@ -14,6 +14,7 @@ import { Navigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { setData } from "../../../store/actions/auth";
 import { Link as RouterLink } from "react-router-dom";
+import ReCAPTCHA from "react-google-invisible-recaptcha";
 
 const RootContainer = styled("div")`
   min-height: 100vh;
@@ -52,6 +53,7 @@ const LoginPage = (props) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [redirect, setRedirect] = useState(false);
+  const recaptchaRef = React.useRef();
 
   const handleEmailChange = (event) => {
     setUsername(event.target.value);
@@ -61,25 +63,34 @@ const LoginPage = (props) => {
     setPassword(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // submission logic
-    setError("");
-    axios
-      .post("/api/v1/user/login", { username, password })
-      .then((response) => {
-        // Handle successful response
-        if (response.data?.status) {
-          setError(response.data?.message);
-        } else {
-          props.setUserDataAction({ username });
-          setRedirect(true);
-        }
-      })
-      .catch((error) => {
-        // Handle error
-        console.error("Error submitting  data:", error);
-      });
+    const token = await recaptchaRef.current.execute();
+    const res = await axios.post("/api/v1/auth/recaptcha/verify", {
+      token,
+    });
+    if (res.data.success && res.data.score >= 0.7) {
+      // submission logic
+      setError("");
+      axios
+        .post("/api/v1/user/login", { username, password })
+        .then((response) => {
+          console.log("ReCAPTCHA response:", response);
+          // Handle successful response
+          if (response.data?.status) {
+            setError(response.data?.message);
+          } else {
+            props.setUserDataAction({ username });
+            setRedirect(true);
+          }
+        })
+        .catch((error) => {
+          // Handle error
+          console.error("Error submitting  data:", error);
+        });
+    } else {
+      alert("Error occured during login");
+    }
   };
 
   if (redirect) {
@@ -145,6 +156,10 @@ const LoginPage = (props) => {
                 </Link>
               </Grid>
             </Grid>
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={process.env.REACT_APP_CLIENT_SECRET}
+            />
           </FormContainer>
         </StyledPaper>
       </Container>
