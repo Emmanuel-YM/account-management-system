@@ -75,7 +75,6 @@ const LoginPage = (props) => {
       axios
         .post("/api/v1/user/login", { username, password })
         .then((response) => {
-          console.log("ReCAPTCHA response:", response);
           // Handle successful response
           if (response.data?.status) {
             setError(response.data?.message);

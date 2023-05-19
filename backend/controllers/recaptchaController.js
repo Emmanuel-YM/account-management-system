@@ -32,7 +32,6 @@ const verifyRecaptcha = async (request, response) => {
   try {
     const { token } = request.body;
     const result = await googleReCaptchaVerify(token);
-    console.log(result,"res")
     response.status(200).send(result);
   } catch (error) {
     console.error("Error verifying secret:", error);
