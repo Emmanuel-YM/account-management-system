@@ -52,5 +52,19 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:4000"
+  "proxy": "http://localhost:4000",
+  "overrides": {
+    "rollup": "2.80.0",
+    "svgo": "3.3.3",
+    "serialize-javascript": "7.0.4",
+    "minimatch": "3.1.5",
+    "filelist": {
+      "minimatch": "5.1.9"
+    },
+    "@tootallnate/once": "3.0.1",
+    "resolve-url-loader": {
+      "postcss": "8.4.49"
+    },
+    "webpack-dev-server": "5.2.1"
+  }
 }
